@@ -207,7 +207,7 @@ async function analyzeB2C(){
     });
     if(!res.ok)throw new Error(`API-feil ${res.status}`);
     const data=await res.json();
-    const plan=JSON.parse(data.content.map(c=>c.text||'').join('').replace(/
+    const parsed=JSON.parse(data.content.map(c=>c.text||'').join('').split('
     const p=document.getElementById('prog');if(p)p.style.width='100%';
 await new Promise(r=>setTimeout(r,300));
 const gw=Math.min(plan.layout.gridWidth||5,9),gh=Math.min(plan.layout.gridHeight||5,9);
@@ -245,7 +245,29 @@ resultEl.innerHTML=`<div style="margin-top:1.75rem">
   <div class="prompt-box"><div class="prompt-label">Bruk med DALL·E 3 eller Midjourney</div><div class="prompt-text">${plan.dallePrompt}</div></div>
   <a href="mailto:kontakt@aulune.no?subject=B2B forespørsel — ${encodeURIComponent(plan.tableCount)} bord" class="cta-email">Kontakt Aulune for tilbud →</a>
 </div>`;
-  </script>
+async function analyzeB2B(){
+  const btn=document.getElementById('b2b-go');
+  const desc=document.getElementById('b2b-desc').value.trim();
+  const size=document.getElementById('b2b-size').value.trim();
+  const seats=document.getElementById('b2b-seats').value.trim();
+  const resultEl=document.getElementById('b2b-result');
+  btn.disabled=true;
+  btn.innerHTML='<span class="spinner"></span> Genererer layout...';
+  resultEl.innerHTML='<div style="margin-top:1.5rem"><div class="progress-bar"><div class="progress-fill" id="prog" style="width:15%"></div></div><div style="font-size:13px;color:var(--mid);text-align:center">Analyserer plassen din...</div></div>';
+  setTimeout(()=>{const p=document.getElementById('prog');if(p)p.style.width='50%';},800);
+  try{
+    const res=await fetch('https://api.anthropic.com/v1/messages',{
+      method:'POST',
+      headers:{'Content-Type':'application/json','x-api-key':API_KEY,'anthropic-version':'2023-06-01','anthropic-dangerous-direct-browser-access':'true'},
+      body:JSON.stringify({model:'claude-opus-4-5',max_tokens:1400,messages:[{role:'user',content:[
+        {type:'image',source:{type:'base64',media_type:'image/jpeg',data:b2bImageB64}},
+        {type:'text',text:'Du er ekspert på utendørs serveringssteder for Aulune.no. Galavito-modeller: RESTO sittende 72cm 1,2kW IP44 360grader varme. NEO moderne premium sittende. DUO stående bar 109cm 2x1,2kW. Areal: "'+size+'". Sitteplasser: "'+seats+'". Notater: "'+desc+'". Svar KUN som gyldig JSON uten markdown: {"spaceAnalysis":"2-3 setninger","recommendedProduct":"RESTO|NEO|DUO","productReason":"Hvorfor denne modellen","tableCount":0,"socketCount":0,"layout":{"description":"Bordoppsett","gridWidth":5,"gridHeight":5,"tables":[{"x":0,"y":0,"label":"T1"}],"sockets":[{"x":1,"y":0,"note":"plassering"}],"walkways":"Gangveier"},"electricalNotes":"Strombehov","additionalHeating":"Komplementare Heatsail-produkter","seasonExtension":"Sesongforlengelse","dallePrompt":"DALL-E prompt under 150 ord"}'}
+      ]}]})
+    });
+    if(!res.ok)throw new Error('API-feil '+res.status);
+    const data=await res.json();
+    const plan=JSON.parse(data.content.map(c=>c.text||'').join('').split('
+</script>
 </body>
 </html>
 
