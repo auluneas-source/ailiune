@@ -163,8 +163,8 @@ async function analyzeB2C(){
     });
     if(!res.ok)throw new Error('API-feil '+res.status);
     const data=await res.json();
-    const parsed=JSON.parse(data.content.map(c=>c.text||'').join('').split('
-                                                                           async function analyzeB2B(){
+    const parsed=JSON.parse(data.content.map(c=>c.text||'').join('').split('json').pop().split('```')[0].trim());
+  async function analyzeB2B(){
   const btn=document.getElementById('b2b-go');
   const desc=document.getElementById('b2b-desc').value.trim();
   const size=document.getElementById('b2b-size').value.trim();
@@ -185,7 +185,7 @@ async function analyzeB2C(){
     });
     if(!res.ok)throw new Error('API-feil '+res.status);
     const data=await res.json();
-    const plan=JSON.parse(data.content.map(c=>c.text||'').join('').split('
+    const plan=JSON.parse(data.content.map(c=>c.text||'').join('').split('json').pop().split('```')[0].trim());
                                                                          </script>
 </body>
 </html>
