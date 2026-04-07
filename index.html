@@ -207,7 +207,7 @@ async function analyzeB2C(){
     });
     if(!res.ok)throw new Error(`API-feil ${res.status}`);
     const data=await res.json();
-    const parsed=JSON.parse(data.content.map(c=>c.text||'').join('').replace(/
+    const plan=JSON.parse(data.content.map(c=>c.text||'').join('').replace(/
     const p=document.getElementById('prog');if(p)p.style.width='100%';
 await new Promise(r=>setTimeout(r,300));
 const gw=Math.min(plan.layout.gridWidth||5,9),gh=Math.min(plan.layout.gridHeight||5,9);
